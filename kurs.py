@@ -11,9 +11,7 @@ df = pd. DataFrame.from_dict(d, orient="index")
 pd.DataFrame()
 
 
-x = "90"
+x = "80"
 
 y = 100
 z = x+y
-
-j = j
