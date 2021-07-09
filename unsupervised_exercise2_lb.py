@@ -1,5 +1,7 @@
+# 2 Exercises for Unsupervised Machine Learning
 import pandas as pd
 import seaborn as sns
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris
@@ -9,36 +11,33 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
 from sklearn import preprocessing
 
-# 2 Exercises for Unsupervised Machine Learning
-# 1. Principal Component Analysis
-#1a)
-# #to see all the output
+# 1 Principal Component Analysis
+#1a) reading dataset
+
+df = pd.read_csv("data/olympics.csv", index_col = "id")
+#looking at the output
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
-
-## Loading the dataset
-
-df = pd.read_csv("data/olympics.csv", index_col = "id")
 
 #print(df)
 df.describe()
 df.drop(columns="score")
 # I drop the score because it is already covered by the other variables and this way we can reduce dimensionality
 
-#1b
+#1b scaling the data
 scaler = StandardScaler()
 scaler.fit(df)
 df_scaled = pd.DataFrame(scaler.transform(df))
 #scaled = pd.DataFrame(df_scaled)
 df_scaled.var()
 
-#1c
+#1c fitting PCA model
 pca = PCA(random_state=42).fit(df_scaled)
 sns.heatmap(pca.components_, xticklabels=df.columns, cmap="viridis", annot=True)
 
 # first component load most prominently: 110
-#
+
 components=pd.DataFrame(pca.components_)
 print(components)
 
@@ -47,19 +46,19 @@ var.index.name ="Principal Component"
 var["Cum. Expl. Var."] = var ["Explained Variance"].cumsum()
 var.plot(kind ="bar")
 
-#1d) 6 components needed
+#1d) how many components needed? - 6 components needed
 
 
 #2 Clustering
-#2a
+#2a) loading dataset
 iris = load_iris()
 X = iris['data']
 y = iris['target']
 
-#2b
+#2b) scaling data
 X_scaled = preprocessing.scale(X)
 
-#2c
+#2c) fitting kmeans, agglomerative, and DBSCAN model
 kmeans = KMeans(n_clusters=3, random_state=42).fit(X_scaled)
 #print(kmeans.labels_)
 df = pd.DataFrame(X, columns=iris["feature_names"])
@@ -78,7 +77,7 @@ df['dbscan'].value_counts()
 
 #print(df)
 
-#2d
+#2d) adding variables
 
 # Everything that DBSCAN cannot cluster is labeled as noise, so points that are far away from every cluster
 # but also points that lie between clusters and do not 'belong' to one.
@@ -97,6 +96,8 @@ df_merge = pd.melt(df, id_vars=['sepal_width', 'petal_length'], var_name='Cluste
 
 df_merge = df_merge.rename(columns={'value': 'Cluster Assignment'})
 
+
+#2g) plotting scatter plot
 plt = sns.FacetGrid(df_merge, col="Clusters")
 plt = plt.map_dataframe(sns.scatterplot, x="sepal_width", y="petal_length")
 plt = plt.add_legend()
